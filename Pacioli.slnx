@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Pacioli.Core/Pacioli.Core.csproj" />
+  <Project Path="Pacioli.Tests/Pacioli.Tests.csproj" />
+</Solution>
