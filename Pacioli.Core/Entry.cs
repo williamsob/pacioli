@@ -6,7 +6,7 @@ namespace Pacioli.Core
     public class Entry
     {
         public Guid Id { get; }
-        public Guid AccountID { get; }
+        public Guid AccountId { get; }
         public long Pence { get; }
         public string Currency { get; }
         public Direction Direction { get; }
@@ -15,7 +15,7 @@ namespace Pacioli.Core
         public Entry(Guid accountID, long pence, string currency, Direction direction)
         {
             Id = Guid.NewGuid();
-            AccountID = accountID;
+            AccountId = accountID;
             Pence = pence;
             Currency = currency;
             Direction = direction;

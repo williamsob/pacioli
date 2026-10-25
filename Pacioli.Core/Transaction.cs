@@ -3,9 +3,9 @@
 
 public class Transaction
 {
-    public Guid id { get; }
-    public IReadOnlyList<Entry> entries { get; }
-    public DateTimeOffset date { get; }
+    public Guid Id { get; }
+    public IReadOnlyList<Entry> Entries { get; }
+    public DateTimeOffset Date { get; }
 
     public Transaction(IEnumerable<Entry> entries, DateTimeOffset date)
     {
@@ -28,9 +28,9 @@ public class Transaction
             }
 
 
-        this.id = Guid.NewGuid();
-        this.entries = list.AsReadOnly();
-        this.date = date;
+        this.Id = Guid.NewGuid();
+        this.Entries = list.AsReadOnly();
+        this.Date = date;
     }
 }
 
