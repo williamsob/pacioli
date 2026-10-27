@@ -6,6 +6,7 @@
         private readonly Dictionary<Guid, Account> _accountsById = new();
         private readonly Dictionary<string, Account> _accountsByExternalId = new();
         private readonly List<Transaction> _transactions = new();
+        private readonly Dictionary<string, Transaction> _transactionsByKey = new();
 
         public void AddAccount(Account account)
         {
@@ -37,12 +38,24 @@
             }
         }
 
-        public void Append(Transaction transaction)
-        {
+        public Transaction Append(Transaction transaction)
+        { 
             lock (_sync)
             {
+                if (_transactionsByKey.TryGetValue(transaction.idempotencyKey, out var existing))
+                {
+                    if (existing.requestHash != transaction.requestHash)
+                        throw new InvalidOperationException("Idempotency key was already used with a different request.");
+                    return existing;   // retry: return the original, write nothing
+
+
+                }
+
                 _transactions.Add(transaction);
+                _transactionsByKey.Add(transaction.idempotencyKey, transaction);
+                return transaction;
             }
+
         }
 
         public IEnumerable<Entry> GetEntries(Guid accountId)

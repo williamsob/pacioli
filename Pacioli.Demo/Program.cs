@@ -2,19 +2,23 @@
 
 InMemoryJournalStore journal = new();
 Ledger ledger = new(journal);
+var key = Guid.NewGuid().ToString();
+var key2 = Guid.NewGuid().ToString();
 
 var bank = ledger.CreateAccount("bancabresciana", "Banca Bresciana", "GBP");
 var davinci = ledger.CreateAccount("davinci-current","Da Vinci", "GBP");
 var caravaggio = ledger.CreateAccount("caravaggio-business", "Caravaggio", "GBP");
 
-Transaction transfer = ledger.Transfer("bancabresciana", "caravaggio-business", 10000);
-Transaction transfer2 = ledger.Transfer("caravaggio-business", "davinci-current", 2000);
+Transaction transfer = ledger.Transfer("bancabresciana", "caravaggio-business", 10000, key);
+Transaction transfer2 = ledger.Transfer("caravaggio-business", "davinci-current", 2000, key2);
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;   // so £ prints correctly
 
 Console.WriteLine("=== Transfers ===");
 PrintTransfer("Bank pays Caravaggio", transfer);
+Console.WriteLine($"key={transfer.idempotencyKey}  hash={transfer.requestHash}");
 PrintTransfer("Caravaggio pays DaVinci", transfer2);
+Console.WriteLine($"key={transfer2.idempotencyKey}  hash={transfer2.requestHash}");
 
 Console.WriteLine();
 Console.WriteLine("=== Closing balances ==="); //hardcoded for demo purposes

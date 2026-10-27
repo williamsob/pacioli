@@ -6,7 +6,7 @@
 		void AddAccount(Account account);
 		Account? GetAccount(Guid id);
 		Account? GetAccountByExternalId(string externalId);
-		void Append(Transaction transaction);
+		Transaction Append(Transaction transaction);
 		IEnumerable<Entry> GetEntries(Guid accountId);
 	}
 }

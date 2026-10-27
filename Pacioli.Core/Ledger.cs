@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Security.Cryptography;
+using System.Text;
 
 namespace Pacioli.Core
 {
@@ -34,7 +35,7 @@ namespace Pacioli.Core
             }
             return balance;
         }
-        public Transaction Transfer(string fromExternalId, string toExternalId, long pence)
+        public Transaction Transfer(string fromExternalId, string toExternalId, long pence, string idempotencyKey)
         {
             if (pence <= 0)
                 throw new ArgumentOutOfRangeException(nameof(pence), "Amount must be positive.");
@@ -42,7 +43,8 @@ namespace Pacioli.Core
                 throw new ArgumentException("Both account labels are required.");
             if (fromExternalId == toExternalId)
                 throw new ArgumentException("Sender and receiver must be different accounts.");
-
+            if (string.IsNullOrWhiteSpace(idempotencyKey))
+                throw new ArgumentException("Idempotency key needed");
             var from = _store.GetAccountByExternalId(fromExternalId)
                 ?? throw new InvalidOperationException($"No account with label '{fromExternalId}'.");
             var to = _store.GetAccountByExternalId(toExternalId)
@@ -50,6 +52,8 @@ namespace Pacioli.Core
 
             if (from.Currency != to.Currency)
                 throw new InvalidOperationException("Accounts must share a currency.");
+           
+            var requestHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes($"{fromExternalId}|{toExternalId}|{pence}")));
 
             var entries = new List<Entry>
             {
@@ -57,9 +61,9 @@ namespace Pacioli.Core
             new Entry(to.Id,   pence, to.Currency,   Direction.Debit)
             };
 
-            var transaction = new Transaction(entries, DateTimeOffset.UtcNow);
-            _store.Append(transaction);
-            return transaction;
+            var transaction = new Transaction(entries, DateTimeOffset.UtcNow, idempotencyKey, requestHash);
+            return _store.Append(transaction);
+            
         }
     }
 }

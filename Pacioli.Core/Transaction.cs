@@ -6,9 +6,15 @@ public class Transaction
     public Guid Id { get; }
     public IReadOnlyList<Entry> Entries { get; }
     public DateTimeOffset Date { get; }
+    public string idempotencyKey { get; }
+    public string requestHash { get; }
 
-    public Transaction(IEnumerable<Entry> entries, DateTimeOffset date)
+    public Transaction(IEnumerable<Entry> entries, DateTimeOffset date, string key, string hash )
     {
+            if (string.IsNullOrWhiteSpace( key ) || string.IsNullOrWhiteSpace( hash ))
+            {
+                throw new ArgumentException("Can't process the transaction without a key or hash.");
+            }
             var list = entries.ToList();
             if (list.Count < 2)
             {
@@ -31,7 +37,10 @@ public class Transaction
         this.Id = Guid.NewGuid();
         this.Entries = list.AsReadOnly();
         this.Date = date;
+        this.idempotencyKey = key;
+        this.requestHash = hash;
+
+        }
     }
-}
 
 }
