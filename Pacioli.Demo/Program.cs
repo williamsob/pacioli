@@ -43,7 +43,7 @@ static string Gbp(long pence)
     return $"{sign}£{Math.Abs(pence) / 100m:N2}";
 }
 
-string AccountName(Guid id) => journal.GetAccount(id)?.Name ?? "unknown";
+string AccountName(Guid id) => ledger.GetAccountById(id)?.Name ?? "unknown";
 
 void PrintTransfer(string description, Transaction tx)
 {

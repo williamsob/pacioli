@@ -21,6 +21,15 @@ namespace Pacioli.Core
             return account;
         }
 
+        public Account? GetAccount(string externalId)
+        {
+            if (string.IsNullOrWhiteSpace(externalId))
+                throw new ArgumentException("Account label is required.", nameof(externalId));
+
+            return _store.GetAccountByExternalId(externalId);
+        }
+        public Account? GetAccountById(Guid id) => _store.GetAccount(id);
+
         public long GetBalance(string externalId)
         {
             var account = _store.GetAccountByExternalId(externalId);
