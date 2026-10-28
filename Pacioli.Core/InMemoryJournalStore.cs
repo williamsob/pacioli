@@ -6,6 +6,7 @@
         private readonly Dictionary<Guid, Account> _accountsById = new();
         private readonly Dictionary<string, Account> _accountsByExternalId = new();
         private readonly List<Transaction> _transactions = new();
+        private readonly HashSet<Guid> _reversedIds = new();
         private readonly Dictionary<string, Transaction> _transactionsByKey = new();
 
         public void AddAccount(Account account)
@@ -38,6 +39,15 @@
             }
         }
 
+        public Transaction? GetTransaction(Guid id)
+        {
+            lock (_sync)
+            {
+                return _transactions.FirstOrDefault(t => t.Id == id);
+               
+            }
+        }
+
         public Transaction Append(Transaction transaction)
         { 
             lock (_sync)
@@ -49,6 +59,14 @@
                     return existing;   // retry: return the original, write nothing
 
 
+                }
+                if (transaction.ReverseTransactionId.HasValue)
+                {
+                    var reversedId = transaction.ReverseTransactionId.Value;
+                    if (_reversedIds.Contains(reversedId))
+                        throw new InvalidOperationException("That transaction has already been reversed.");
+
+                    _reversedIds.Add(reversedId);
                 }
 
                 _transactions.Add(transaction);

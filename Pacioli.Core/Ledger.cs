@@ -61,7 +61,7 @@ namespace Pacioli.Core
 
             if (from.Currency != to.Currency)
                 throw new InvalidOperationException("Accounts must share a currency.");
-           
+
             var requestHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes($"{fromExternalId}|{toExternalId}|{pence}")));
 
             var entries = new List<Entry>
@@ -72,7 +72,42 @@ namespace Pacioli.Core
 
             var transaction = new Transaction(entries, DateTimeOffset.UtcNow, idempotencyKey, requestHash);
             return _store.Append(transaction);
-            
         }
+            public Transaction Reverse(Guid transactionId, string idempotencyKey)
+        {
+            if (string.IsNullOrWhiteSpace(idempotencyKey))
+                throw new ArgumentException("Idempotency key needed");
+
+            var original = _store.GetTransaction(transactionId)
+                ?? throw new InvalidOperationException("No transaction with this ID has been found");
+
+            if (original.ReverseTransactionId.HasValue)
+                throw new InvalidOperationException("A reversal can't itself be reversed. Make a new transfer instead.");
+
+            var mirrorEntries = new List<Entry>();
+            foreach (var entry in original.Entries)
+            {
+                mirrorEntries.Add(new Entry(entry.AccountId, entry.Pence, entry.Currency, Opposite(entry.Direction)));
+            }
+
+            var requestHash = Convert.ToHexString(
+                SHA256.HashData(Encoding.UTF8.GetBytes($"reverse|{transactionId}")));
+
+            var reversal = new Transaction(
+                mirrorEntries,
+                DateTimeOffset.UtcNow,
+                idempotencyKey,
+                requestHash,
+                reverseId: transactionId);
+
+            return _store.Append(reversal);
+        }
+
+        private static Direction Opposite(Direction direction) =>
+            direction == Direction.Debit ? Direction.Credit : Direction.Debit;
+
+
+
+
     }
 }

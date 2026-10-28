@@ -4,12 +4,13 @@
 public class Transaction
 {
     public Guid Id { get; }
+    public Guid? ReverseTransactionId { get; }
     public IReadOnlyList<Entry> Entries { get; }
     public DateTimeOffset Date { get; }
     public string idempotencyKey { get; }
     public string requestHash { get; }
 
-    public Transaction(IEnumerable<Entry> entries, DateTimeOffset date, string key, string hash )
+    public Transaction(IEnumerable<Entry> entries, DateTimeOffset date, string key, string hash, Guid? reverseId = null)
     {
             if (string.IsNullOrWhiteSpace( key ) || string.IsNullOrWhiteSpace( hash ))
             {
@@ -39,6 +40,7 @@ public class Transaction
         this.Date = date;
         this.idempotencyKey = key;
         this.requestHash = hash;
+        this.ReverseTransactionId = reverseId;
 
         }
     }
