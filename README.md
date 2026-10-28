@@ -158,9 +158,15 @@ Out of scope: HTTP API, UI, multi-currency and FX, authentication. Each would be
 ## Personal thoughts
 
 Pacioli came about during the development of another project (Nourish). At the time the focus was on developing an ETL pipeline to build a database seed for the app to use offline. After lots of debugging, API errors, and getting proper data sources for this one part, I said “let’s take a touch”.
+
+I held off development on Nourish for a while. I wanted to focus on a project that leaned towards the systems side of things, using tools I was familiar with. After a bit of brainstorming, the idea of a transaction ledger came into play. The decision to make it a class library and not an app was due to scope. More specifically, I wanted to build the engine, not another abstracted perspective.
+
 Pacioli as a codename actually makes lots of sense to me. Having grown up in Italian culture, I thought an ode to history was a nice touch, and Pacioli actually formalised and documented the double-entry bookkeeping method that was used by Venetian merchants for centuries before.
 
-Developing this library felt like taking a sabbatical of my own. Incrementally building the library gave me space to learn from mistakes, get familiar with patterns andzbetter understand the logic behind the thing I was building.
+Developing this library felt like taking a sabbatical of my own. Incrementally building the library gave me space to learn from mistakes, get familiar with patterns and better understand the logic behind the thing I was building.
+
+I built more familiarity with C# and its intricacies, tested my system design skills, learnt about idempotency, concurrency, and so much more. But to cap it off, I came away with something tangible, and hopefully something that might be of actual use.
+
 But I’ll leave that judgement to you. This is Pacioli 1494.
 
 ---
