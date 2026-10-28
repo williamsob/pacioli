@@ -1,4 +1,4 @@
-![Pacioli 1494: double-entry ledger class library](minimalbanner.png)
+![Pacioli 1494: double-entry ledger class library](assets/minimalbanner.png)
 
 # Pacioli1494
 
