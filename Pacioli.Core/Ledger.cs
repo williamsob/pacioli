@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Globalization;
 
 namespace Pacioli.Core
 {
@@ -32,10 +33,11 @@ namespace Pacioli.Core
 
         public long GetBalance(string externalId)
         {
-            var account = _store.GetAccountByExternalId(externalId);
-
-            if (account == null)
-                throw new InvalidOperationException("No account with label '{externalId}' was found.");
+            if (string.IsNullOrWhiteSpace(externalId))
+                throw new ArgumentException("Account label is required.", nameof(externalId));
+            
+            var account = _store.GetAccountByExternalId(externalId)
+                ?? throw new InvalidOperationException($"No account with label '{externalId} was found");
 
             long balance = 0;
             foreach (var entry in _store.GetEntries(account.Id))
@@ -62,8 +64,7 @@ namespace Pacioli.Core
             if (from.Currency != to.Currency)
                 throw new InvalidOperationException("Accounts must share a currency.");
 
-            var requestHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes($"{fromExternalId}|{toExternalId}|{pence}")));
-
+            var requestHash = HashRequest("transfer", fromExternalId, toExternalId, pence.ToString(CultureInfo.InvariantCulture));
             var entries = new List<Entry>
             {
             new Entry(from.Id, pence, from.Currency, Direction.Credit),
@@ -90,8 +91,7 @@ namespace Pacioli.Core
                 mirrorEntries.Add(new Entry(entry.AccountId, entry.Pence, entry.Currency, Opposite(entry.Direction)));
             }
 
-            var requestHash = Convert.ToHexString(
-                SHA256.HashData(Encoding.UTF8.GetBytes($"reverse|{transactionId}")));
+            var requestHash = HashRequest("reverse", transactionId.ToString());
 
             var reversal = new Transaction(
                 mirrorEntries,
@@ -106,7 +106,11 @@ namespace Pacioli.Core
         private static Direction Opposite(Direction direction) =>
             direction == Direction.Debit ? Direction.Credit : Direction.Debit;
 
-
+        private static string HashRequest(params string[] parts)
+        {
+            var text = string.Concat(parts.Select(part => $"{part.Length}:{part};"));
+            return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
+        }
 
 
     }

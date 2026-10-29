@@ -11,6 +11,8 @@
 
         public void AddAccount(Account account)
         {
+            ArgumentNullException.ThrowIfNull(account);
+
             lock (_sync)
             {
                 if (_accountsByExternalId.ContainsKey(account.ExternalId))
@@ -49,12 +51,14 @@
         }
 
         public Transaction Append(Transaction transaction)
-        { 
+        {
+            ArgumentNullException.ThrowIfNull(transaction);
+
             lock (_sync)
             {
-                if (_transactionsByKey.TryGetValue(transaction.idempotencyKey, out var existing))
+                if (_transactionsByKey.TryGetValue(transaction.IdempotencyKey, out var existing))
                 {
-                    if (existing.requestHash != transaction.requestHash)
+                    if (existing.RequestHash != transaction.RequestHash)
                         throw new InvalidOperationException("Idempotency key was already used with a different request.");
                     return existing;   // retry: return the original, write nothing
 
@@ -70,7 +74,7 @@
                 }
 
                 _transactions.Add(transaction);
-                _transactionsByKey.Add(transaction.idempotencyKey, transaction);
+                _transactionsByKey.Add(transaction.IdempotencyKey, transaction);
                 return transaction;
             }
 

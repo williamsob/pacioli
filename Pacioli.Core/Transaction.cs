@@ -7,8 +7,8 @@ public class Transaction
     public Guid? ReverseTransactionId { get; }
     public IReadOnlyList<Entry> Entries { get; }
     public DateTimeOffset Date { get; }
-    public string idempotencyKey { get; }
-    public string requestHash { get; }
+    public string IdempotencyKey { get; }
+    public string RequestHash { get; }
 
     public Transaction(IEnumerable<Entry> entries, DateTimeOffset date, string key, string hash, Guid? reverseId = null)
     {
@@ -38,8 +38,8 @@ public class Transaction
         this.Id = Guid.NewGuid();
         this.Entries = list.AsReadOnly();
         this.Date = date;
-        this.idempotencyKey = key;
-        this.requestHash = hash;
+        this.IdempotencyKey = key;
+        this.RequestHash = hash;
         this.ReverseTransactionId = reverseId;
 
         }

@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-
-namespace Pacioli.Core
+﻿namespace Pacioli.Core
 {
 
     public class Entry
@@ -12,12 +10,19 @@ namespace Pacioli.Core
         public Direction Direction { get; }
         public long SignedPence => Direction == Direction.Debit ? Pence : -Pence;
 
-        public Entry(Guid accountID, long pence, string currency, Direction direction)
+        public Entry(Guid accountId, long pence, string currency, Direction direction)
         {
+            if (pence <= 0)
+                throw new ArgumentOutOfRangeException(nameof(pence), "Amount must be positive");
+            if (string.IsNullOrWhiteSpace(currency))
+                throw new ArgumentException("Currency cannot be null or whitespace", nameof(currency));
+            if (!Enum.IsDefined(direction))
+                throw new ArgumentException("Direction must be Debit or Credit", nameof(direction));
+
             Id = Guid.NewGuid();
-            AccountId = accountID;
+            AccountId = accountId;
             Pence = pence;
-            Currency = currency;
+            Currency = currency.ToUpperInvariant();
             Direction = direction;
         }
     }

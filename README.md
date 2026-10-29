@@ -121,18 +121,12 @@ It is named after Luca Pacioli, whose 1494 treatise _Summa de arithmetica_ gave 
 Requires the [.NET SDK](https://dotnet.microsoft.com/download).
 
 ```bash
-git clone <https://github.com/williamsob/pacioli>
+git clone https://github.com/williamsob/pacioli
 cd pacioli
 dotnet run --project Pacioli.Demo
 ```
 
-The demo creates three accounts, runs transfers, prints every entry with its direction, demonstrates a retry and a rejected key reuse, then prints the closing balances and checks that they sum to zero.
-
-Run the tests (once added):
-
-```bash
-dotnet test
-```
+The demo creates three accounts, runs transfers, prints every entry with its direction, demonstrates a reversal transaction, shows error messages for reversal retry, reversing a reversal, or unknown transactions, then prints the closing balances, checks that they sum to zero, and shows the final count.
 
 To use the library in your own code, reference `Pacioli.Core` and start from the snippet at the top of this README.
 

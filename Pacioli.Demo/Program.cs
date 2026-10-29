@@ -16,9 +16,8 @@ Console.OutputEncoding = System.Text.Encoding.UTF8;   // so £ prints correctly
 
 Console.WriteLine("=== Transfers ===");
 PrintTransfer("Bank pays Caravaggio", transfer);
-Console.WriteLine($"key={transfer.idempotencyKey}  hash={transfer.requestHash}");
 PrintTransfer("Caravaggio pays DaVinci", transfer2);
-Console.WriteLine($"key={transfer2.idempotencyKey}  hash={transfer2.requestHash}");
+
 
 Console.WriteLine();
 Console.WriteLine("=== Closing balances ==="); //hardcoded for demo purposes
